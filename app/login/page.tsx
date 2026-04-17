@@ -35,7 +35,7 @@ function LoginInner() {
       setLoading(false)
       return
     }
-    router.push(`/builder?handle=${inputHandle.toLowerCase()}`)
+    window.location.href = `/builder?handle=${inputHandle.toLowerCase()}`
   }
 
   const forgot = async () => {

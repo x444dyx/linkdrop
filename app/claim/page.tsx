@@ -93,7 +93,7 @@ export default function Home() {
     const data = await signupRes.json()
     if (!signupRes.ok) { setError(data.error); setLoading(false); return }
 
-    router.push(`/builder?handle=${handle}`)
+    window.location.href = `/builder?handle=${handle}`
   }
 
   return (
