@@ -337,7 +337,7 @@ function BuilderInner() {
             {activeTab === 'profile' && (
               <>
                 <Section dark={D} label="Bio">
-                  <textarea value={bio} onChange={e => setBio(e.target.value)} rows={2} placeholder="a short bio..." style={{ ...inp, resize: 'none', lineHeight: 1.5 }} />
+                  <textarea value={bio} onChange={e => setBio(e.target.value)} rows={2} placeholder="a short bio..." style={{ ...inp, resize: 'vertical', lineHeight: 1.5, minHeight: 60, maxHeight: 200 }} />
                 </Section>
 
                 <Section dark={D} label="Photo">
