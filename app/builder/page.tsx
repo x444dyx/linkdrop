@@ -82,6 +82,20 @@ function BuilderInner() {
   const avatarInitials = handle.slice(0, 2).toUpperCase()
 
   useEffect(() => {
+    // Check auth client-side — more reliable than middleware on production
+    const cookieHandle = document.cookie.split(';').find(c => c.trim().startsWith('ld_handle='))?.split('=')[1]
+    const hasSession = document.cookie.split(';').some(c => c.trim().startsWith('ld_session='))
+    if (!hasSession) {
+      window.location.href = `/login${handle ? `?handle=${handle}` : ''}`
+      return
+    }
+    if (handle && cookieHandle && cookieHandle !== handle) {
+      window.location.href = `/login?handle=${handle}&mismatch=1`
+      return
+    }
+  }, [handle])
+
+  useEffect(() => {
     const saved = localStorage.getItem('linkdrop-builder-dark')
     if (saved === 'true') setBuilderDark(true)
   }, [])

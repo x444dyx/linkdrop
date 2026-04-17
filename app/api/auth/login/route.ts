@@ -3,39 +3,33 @@ import { createClient } from '@supabase/supabase-js'
 import { checkRateLimit, recordFailedAttempt, clearAttempts } from '@/lib/rateLimit'
 
 export async function POST(req: NextRequest) {
-  const { handle, password, theme, custom_bg, custom_accent } = await req.json()
+  const { handle, password } = await req.json()
   if (!handle || !password) return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
 
-  const serviceClient = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { persistSession: false } }
-  )
-  const anonClient = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  const serviceClient = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } })
+  const anonClient = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
-  // Check rate limit
-  const { locked } = await checkRateLimit(handle)
+  // Check if locked
+  const { locked, attempts } = await checkRateLimit(handle)
   if (locked) {
     return NextResponse.json({
-      error: 'Account locked after too many failed attempts. Reset your password via email.',
+      error: 'Account locked after too many failed attempts. Please reset your password via email.',
       locked: true,
     }, { status: 429 })
   }
 
-  const { data: profile } = await serviceClient.from('profiles').select('email').eq('handle', handle).single()
-  if (!profile) return NextResponse.json({ error: `Handle @${handle} not found` }, { status: 404 })
-  if (!profile.email) return NextResponse.json({ error: `@${handle} has no password set` }, { status: 400 })
+  // Get email for this handle
+  const { data: profile } = await serviceClient.from('profiles').select('email, handle').eq('handle', handle).single()
+  if (!profile) return NextResponse.json({ error: 'Handle not found' }, { status: 404 })
+  if (!profile.email) return NextResponse.json({ error: 'This handle has no password set. Go to the claim page.' }, { status: 400 })
 
-  const { error: authError } = await anonClient.auth.signInWithPassword({ email: profile.email, password })
+  const { data, error } = await anonClient.auth.signInWithPassword({ email: profile.email, password })
 
-  if (authError) {
+  if (error) {
     const { locked: nowLocked, remaining } = await recordFailedAttempt(handle)
     if (nowLocked) {
       return NextResponse.json({
-        error: 'Account locked after too many failed attempts. Reset your password via email.',
+        error: 'Account locked after too many failed attempts. Please reset your password via email.',
         locked: true,
       }, { status: 429 })
     }
@@ -45,11 +39,24 @@ export async function POST(req: NextRequest) {
     }, { status: 401 })
   }
 
-  // Success — clear attempts and apply theme
+  // Success — clear failed attempts
   await clearAttempts(handle)
-  await serviceClient.from('profiles').update({
-    theme, custom_bg: custom_bg || null, custom_accent: custom_accent || null
-  }).eq('handle', handle)
 
-  return NextResponse.json({ success: true })
+  const res = NextResponse.json({ success: true, handle })
+  const isProd = process.env.NODE_ENV === 'production'
+  res.cookies.set('ld_session', data.session!.access_token, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30,
+    path: '/',
+  })
+  res.cookies.set('ld_handle', handle, {
+    httpOnly: false,
+    secure: isProd,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30,
+    path: '/',
+  })
+  return res
 }

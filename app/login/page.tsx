@@ -35,6 +35,8 @@ function LoginInner() {
       setLoading(false)
       return
     }
+    // Small delay to ensure cookie is committed before navigation
+    await new Promise(resolve => setTimeout(resolve, 100))
     window.location.href = `/builder?handle=${inputHandle.toLowerCase()}`
   }
 
