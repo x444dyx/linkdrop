@@ -62,6 +62,7 @@ function BuilderInner() {
   const [addingLink, setAddingLink] = useState(false)
   const [builderDark, setBuilderDark] = useState(false)
   const [customBg, setCustomBg] = useState('')
+  const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('left')
   const [customAccent, setCustomAccent] = useState('')
   const [bgHexInput, setBgHexInput] = useState('')
   const [accentHexInput, setAccentHexInput] = useState('')
@@ -112,6 +113,7 @@ function BuilderInner() {
       if (data.theme) setTheme(data.theme)
       if (data.view_count) setViewCount(data.view_count)
       if (data.qr_url) setQrUrl(data.qr_url)
+      if (data.text_align) setTextAlign(data.text_align)
       const presetMap: Record<string, { bg: string; accent: string }> = {
         light: { bg: '#f5f4f0', accent: '#111110' },
         dark: { bg: '#111110', accent: '#f0efeb' },
@@ -141,6 +143,7 @@ function BuilderInner() {
     layout, theme,
     custom_bg: customBg || undefined,
     custom_accent: customAccent || undefined,
+    text_align: textAlign,
   } as any
 
   const addLink = () => {
@@ -291,6 +294,7 @@ function BuilderInner() {
           </div>
           <span style={{ color: uiBorderStrong }}>/</span>
           <span style={{ fontSize: 11, color: uiText }}>@{handle}</span>
+          <span style={{ fontSize: 8, color: uiDim, fontFamily: "'DM Mono', monospace", letterSpacing: '0.08em' }}>v1.4.0</span>
           {viewCount > 0 && (
             <span style={{ fontSize: 9, color: uiMuted, background: uiSurface, border: `1px solid ${uiBorder}`, borderRadius: 3, padding: '2px 7px' }}>
               {viewCount.toLocaleString()} views
@@ -451,6 +455,21 @@ function BuilderInner() {
                     {LAYOUT_OPTIONS.map(l => (
                       <button key={l.value} onClick={() => setLayout(l.value)} style={{ flex: 1, padding: '6px 4px', background: layout === l.value ? '#f0f0f0' : 'transparent', color: layout === l.value ? '#111' : '#555', border: '1px solid ' + (layout === l.value ? '#f0f0f0' : '#2a2a2a'), borderRadius: 3, fontSize: 9, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Mono', monospace", letterSpacing: '0.06em', textTransform: 'uppercase', transition: 'all 0.15s' }}>
                         {l.label}
+                      </button>
+                    ))}
+                  </div>
+                </Section>
+
+                <Section dark={D} label="Text alignment">
+                  <p style={{ fontSize: 10, color: uiMuted, marginBottom: 10, lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>Controls alignment of your profile info and links. Centre moves the avatar above the bio and centres all content.</p>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    {([
+                      { value: 'left', icon: '▤', label: 'LEFT' },
+                      { value: 'center', icon: '▥', label: 'CENTRE' },
+                      { value: 'right', icon: '▦', label: 'RIGHT' },
+                    ] as const).map(a => (
+                      <button key={a.value} onClick={() => setTextAlign(a.value)} style={{ flex: 1, padding: '6px 4px', background: textAlign === a.value ? '#f0f0f0' : 'transparent', color: textAlign === a.value ? '#111' : '#555', border: '1px solid ' + (textAlign === a.value ? '#f0f0f0' : '#2a2a2a'), borderRadius: 3, fontSize: 9, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Mono', monospace", letterSpacing: '0.06em', transition: 'all 0.15s' }}>
+                        {a.label}
                       </button>
                     ))}
                   </div>

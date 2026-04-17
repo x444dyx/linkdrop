@@ -29,6 +29,7 @@ export default async function HandlePage({ params }: { params: { handle: string 
         links: data.links,
         layout: data.layout,
         theme: data.theme,
+        text_align: data.text_align || 'left',
       }}
       avatarUrl={data.avatar_url}
       customBg={data.custom_bg}

@@ -14,7 +14,7 @@ export default function ProfilePreview({ profile, customBg, customAccent }: {
   customBg?: string
   customAccent?: string
 }) {
-  const { handle, bio, avatar_initials, avatar_color, links, layout, theme } = profile
+  const { handle, bio, avatar_initials, avatar_color, links, layout, theme, text_align } = profile
   const avatarUrl = (profile as any).avatar_url || ''
 
   const bg = customBg || null
@@ -28,6 +28,9 @@ export default function ProfilePreview({ profile, customBg, customAccent }: {
   const textSecondary = accent ? accent + 'aa' : (isDark ? '#888888' : '#555555')
   const textMuted = accent ? accent + '55' : (isDark ? '#444444' : '#aaaaaa')
   const dotColor = accent || (isDark ? '#f0f0f0' : '#111111')
+  const align = (text_align as string) || 'left'
+  const isCenter = align === 'center'
+  const isRight = align === 'right'
 
   return (
     <div style={{
@@ -65,7 +68,7 @@ export default function ProfilePreview({ profile, customBg, customAccent }: {
         </div>
 
         {/* Profile */}
-        <div style={{ padding: '14px 12px 10px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: `1px solid ${borderColor}` }}>
+        <div style={{ padding: '14px 12px 10px', display: 'flex', flexDirection: isCenter || isRight ? 'column' : 'row', alignItems: isCenter ? 'center' : isRight ? 'flex-end' : 'center', gap: isCenter || isRight ? 8 : 10, borderBottom: `1px solid ${borderColor}`, textAlign: align as any }}>
           <div style={{
             width: 52, height: 52, borderRadius: '50%',
             background: avatar_color, flexShrink: 0,
@@ -77,7 +80,7 @@ export default function ProfilePreview({ profile, customBg, customAccent }: {
               : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 500, color: '#fff' }}>{avatar_initials}</div>
             }
           </div>
-          <div>
+          <div style={{ width: isCenter || isRight ? '100%' : 'auto' }}>
             <div style={{ fontSize: 13, fontWeight: 500, color: textPrimary, marginBottom: 3, fontFamily: "'DM Sans', sans-serif" }}>@{handle}</div>
             <div style={{ fontSize: 11, color: textSecondary, lineHeight: 1.5, fontFamily: "'DM Sans', sans-serif" }}>{bio}</div>
           </div>
@@ -105,28 +108,28 @@ export default function ProfilePreview({ profile, customBg, customAccent }: {
             )
 
             if (sz === 'medium') return (
-              <div key={link.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderBottom: !isLast ? `1px solid ${borderColor}` : 'none', fontSize: 10, color: textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
+              <div key={link.id} style={{ display: 'flex', alignItems: 'center', flexDirection: isRight ? 'row-reverse' : 'row', gap: 8, padding: '10px 16px', borderBottom: !isLast ? `1px solid ${borderColor}` : 'none', fontSize: 10, color: textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
                 <div style={{ width: 28, height: 28, borderRadius: '50%', background: link.color, flexShrink: 0, overflow: 'hidden', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 500, color: '#fff' }}>
                   {link.avatar_url ? <img src={link.avatar_url} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} /> : link.initials}
                 </div>
-                <span style={{ flex: 1 }}>{link.label}</span>
+                <span style={{ flex: 1, textAlign: isCenter ? 'center' : isRight ? 'right' : 'left' }}>{link.label}</span>
                 <span style={{ fontSize: 8, opacity: 0.4 }}>→</span>
               </div>
             )
 
             return (
-              <div key={link.id} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '7px 16px', borderBottom: !isLast ? `1px solid ${borderColor}` : 'none', fontSize: 9, color: textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
+              <div key={link.id} style={{ display: 'flex', alignItems: 'center', flexDirection: isRight ? 'row-reverse' : 'row', gap: 7, padding: '7px 16px', borderBottom: !isLast ? `1px solid ${borderColor}` : 'none', fontSize: 9, color: textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
                 <div style={{ width: 20, height: 20, borderRadius: '50%', background: link.color, flexShrink: 0, overflow: 'hidden', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 6, fontWeight: 500, color: '#fff' }}>
                   {link.avatar_url ? <img src={link.avatar_url} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} /> : link.initials}
                 </div>
-                <span style={{ flex: 1 }}>{link.label}</span>
+                <span style={{ flex: 1, textAlign: isCenter ? 'center' : isRight ? 'right' : 'left' }}>{link.label}</span>
                 <span style={{ fontSize: 7, opacity: 0.4 }}>→</span>
               </div>
             )
           })}
 
           {layout === 'bubbles' && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, justifyContent: isCenter ? 'center' : isRight ? 'flex-end' : 'flex-start' }}>
               {links.map(link => {
                 const sz = link.size || 'small'
                 if (sz === 'large') return (
@@ -201,7 +204,7 @@ export default function ProfilePreview({ profile, customBg, customAccent }: {
           )}
 
           {layout === 'icons' && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: isCenter ? 'center' : isRight ? 'flex-end' : 'flex-start' }}>
               {links.map(link => {
                 const sz = link.size || 'small'
                 const iconSize = sz === 'large' ? 48 : sz === 'medium' ? 36 : 26

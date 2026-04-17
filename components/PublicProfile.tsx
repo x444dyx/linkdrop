@@ -113,7 +113,7 @@ export default function PublicProfile({ profile, avatarUrl, customBg, customAcce
   customBg?: string
   customAccent?: string
 }) {
-  const { handle, bio, avatar_initials, avatar_color, links, layout, theme } = profile
+  const { handle, bio, avatar_initials, avatar_color, links, layout, theme, text_align } = profile
   const [showShare, setShowShare] = useState(false)
   const [linkShare, setLinkShare] = useState<{ label: string; url: string; avatarUrl?: string; color?: string; initials?: string } | null>(null)
 
@@ -158,6 +158,9 @@ export default function PublicProfile({ profile, avatarUrl, customBg, customAcce
   const textPrimary = accent || (isDark ? '#f0f0f0' : '#111111')
   const textSecondary = accent ? accent + 'aa' : (isDark ? '#888888' : '#555555')
   const dotColor = accent || (isDark ? '#f0f0f0' : '#111111')
+  const align = (text_align as string) || 'left'
+  const isCenter = align === 'center'
+  const isRight = align === 'right'
 
   const ShareBtn = ({ label, url, avatarUrl: linkAvatarUrl, color, initials }: { label: string; url: string; avatarUrl?: string; color?: string; initials?: string }) => (
     <button
@@ -230,14 +233,14 @@ export default function PublicProfile({ profile, avatarUrl, customBg, customAcce
         </div>
 
         {/* Profile section */}
-        <div style={{ padding: '28px 28px 24px', display: 'flex', alignItems: 'center', gap: 20, borderBottom: `1px solid ${borderColor}` }}>
+        <div style={{ padding: '28px 28px 24px', display: 'flex', flexDirection: isCenter || isRight ? 'column' : 'row', alignItems: isCenter ? 'center' : isRight ? 'flex-end' : 'center', gap: isCenter || isRight ? 12 : 20, borderBottom: `1px solid ${borderColor}`, textAlign: align as any }}>
           <div style={{ width: 80, height: 80, borderRadius: '50%', background: avatar_color, flexShrink: 0, overflow: 'hidden', position: 'relative', border: `1px solid ${borderColor}` }}>
             {avatarUrl
               ? <img src={avatarUrl} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
               : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 500, color: '#fff', fontFamily: "'DM Sans', sans-serif" }}>{avatar_initials}</div>
             }
           </div>
-          <div>
+          <div style={{ width: isCenter || isRight ? '100%' : 'auto' }}>
             <div style={{ fontSize: 18, fontWeight: 500, color: textPrimary, letterSpacing: '0.01em', marginBottom: 6, fontFamily: "'DM Sans', sans-serif" }}>@{handle}</div>
             <div style={{ fontSize: 13, color: textSecondary, lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>{bio}</div>
           </div>
@@ -274,7 +277,7 @@ export default function PublicProfile({ profile, avatarUrl, customBg, customAcce
             if (sz === 'medium') return (
               <a id={`link-${link.id}`} key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" onClick={e => { e.preventDefault(); setHighlightedLink(null); history.replaceState(null, '', window.location.pathname); trackClick(link.id, link.url) }}
                 className={highlightedLink === link.id ? 'link-highlighted' : ''}
-                style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 28px', borderBottom: !isLast ? `1px solid ${borderColor}` : 'none', textDecoration: 'none', color: textPrimary, fontSize: 14, fontFamily: "'DM Sans', sans-serif", transition: 'background 0.1s', background: highlightedLink === link.id ? (isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)') : 'transparent', borderRadius: 2 }}
+                style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 28px', borderBottom: !isLast ? `1px solid ${borderColor}` : 'none', textDecoration: 'none', color: textPrimary, fontSize: 14, fontFamily: "'DM Sans', sans-serif", transition: 'background 0.1s', flexDirection: isRight ? 'row-reverse' : 'row', background: highlightedLink === link.id ? (isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)') : 'transparent', borderRadius: 2 }}
                 onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#ffffff06'}
                 onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
               >
@@ -290,7 +293,7 @@ export default function PublicProfile({ profile, avatarUrl, customBg, customAcce
             return (
               <a id={`link-${link.id}`} key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" onClick={e => { e.preventDefault(); setHighlightedLink(null); history.replaceState(null, '', window.location.pathname); trackClick(link.id, link.url) }}
                 className={highlightedLink === link.id ? 'link-highlighted' : ''}
-                style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 28px', borderBottom: !isLast ? `1px solid ${borderColor}` : 'none', textDecoration: 'none', color: textPrimary, fontSize: 12, fontFamily: "'DM Sans', sans-serif", transition: 'background 0.1s', background: highlightedLink === link.id ? (isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)') : 'transparent', borderRadius: 2 }}
+                style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 28px', borderBottom: !isLast ? `1px solid ${borderColor}` : 'none', textDecoration: 'none', color: textPrimary, fontSize: 12, fontFamily: "'DM Sans', sans-serif", transition: 'background 0.1s', flexDirection: isRight ? 'row-reverse' : 'row', background: highlightedLink === link.id ? (isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)') : 'transparent', borderRadius: 2 }}
                 onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#ffffff06'}
                 onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
               >
@@ -305,7 +308,7 @@ export default function PublicProfile({ profile, avatarUrl, customBg, customAcce
           })}
 
           {layout === 'bubbles' && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: isCenter ? 'center' : isRight ? 'flex-end' : 'flex-start' }}>
               {links.map(link => {
                 const sz = link.size || 'small'
                 if (sz === 'large') return (
@@ -412,7 +415,7 @@ export default function PublicProfile({ profile, avatarUrl, customBg, customAcce
           )}
 
           {layout === 'icons' && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, justifyContent: 'center' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, justifyContent: isCenter ? 'center' : isRight ? 'flex-end' : 'flex-start' }}>
               {links.map(link => {
                 const sz = link.size || 'small'
                 const iconSize = sz === 'large' ? 80 : sz === 'medium' ? 60 : 44

@@ -258,6 +258,7 @@ export default function LandingPage() {
           <span style={{ fontSize: 8, color: '#aaa', letterSpacing: '0.12em' }}>LINKDROP</span>
         </div>
         <div style={{ display: 'flex', gap: 20 }}>
+          <span style={{ fontSize: 8, color: '#333', fontFamily: "'DM Mono', monospace", letterSpacing: '0.1em' }}>v1.4.0</span>
           {[['EXPLORE', '/explore'], ['DOCS', '/docs'], ['SIGN IN', '/login'], ['CLAIM', '/']].map(([label, href]) => (
             <Link key={label} href={href} style={{ fontSize: 8, color: '#555', textDecoration: 'none', letterSpacing: '0.1em', transition: 'color 0.2s' }}
               onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#f0f0f0'}

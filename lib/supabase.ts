@@ -12,6 +12,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 })
 
 export type Layout = 'rows' | 'bubbles' | 'grid' | 'icons'
+export type TextAlign = 'left' | 'center' | 'right'
 export type Theme = 'light' | 'dark' | 'purple' | 'teal' | 'coral'
 
 export interface LinkItem {
@@ -33,4 +34,5 @@ export interface Profile {
   links: LinkItem[]
   layout: Layout
   theme: Theme
+  text_align?: TextAlign
 }

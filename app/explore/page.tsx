@@ -25,6 +25,7 @@ function ScaledPreview({ profile, footer }: { profile: any; footer: React.ReactN
               links: profile.links || [],
               layout: profile.layout || 'rows',
               theme: profile.theme || 'dark',
+              text_align: profile.text_align || 'left',
             } as any}
             customBg={profile.custom_bg}
             customAccent={profile.custom_accent}
@@ -70,7 +71,7 @@ export default function ExplorePage() {
     )
     supabase
       .from('profiles')
-      .select('handle, bio, avatar_initials, avatar_color, avatar_url, links, layout, theme, custom_bg, custom_accent, created_at, updated_at, view_count')
+      .select('handle, bio, avatar_initials, avatar_color, avatar_url, links, layout, theme, custom_bg, custom_accent, created_at, updated_at, view_count, text_align')
       .order('updated_at', { ascending: false })
       .limit(100)
       .then(({ data }) => {
