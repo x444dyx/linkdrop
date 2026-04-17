@@ -134,8 +134,9 @@ Go to linkdrop.ayteelabs.com/login to reset your password.`
     setShowCopyModal(null)
     setYourHandle(''); setYourPassword('')
     // Check if already logged in as this handle
-    const cookieHandle = document.cookie.split(';').find(c => c.trim().startsWith('ld_handle='))?.split('=')[1]
-    if (cookieHandle === handle) {
+    const storedHandle = localStorage.getItem('ld_handle')
+    const storedSession = localStorage.getItem('ld_session')
+    if (storedHandle === handle && storedSession) {
       window.location.href = `/builder?handle=${handle}`
     } else {
       // Log them in first then redirect to builder
@@ -145,6 +146,9 @@ Go to linkdrop.ayteelabs.com/login to reset your password.`
         body: JSON.stringify({ handle, password: yourPassword }),
       })
       if (loginRes.ok) {
+        const loginData = await loginRes.json()
+        localStorage.setItem('ld_session', loginData.token)
+        localStorage.setItem('ld_handle', handle)
         window.location.href = `/builder?handle=${handle}`
       } else {
         window.location.href = `/${handle}`

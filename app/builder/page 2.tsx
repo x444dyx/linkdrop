@@ -82,19 +82,6 @@ function BuilderInner() {
   const avatarInitials = handle.slice(0, 2).toUpperCase()
 
   useEffect(() => {
-    const storedSession = localStorage.getItem('ld_session')
-    const storedHandle = localStorage.getItem('ld_handle')
-    if (!storedSession) {
-      window.location.href = `/login${handle ? `?handle=${handle}` : ''}`
-      return
-    }
-    if (handle && storedHandle && storedHandle !== handle) {
-      window.location.href = `/login?handle=${handle}&mismatch=1`
-      return
-    }
-  }, [handle])
-
-  useEffect(() => {
     const saved = localStorage.getItem('linkdrop-builder-dark')
     if (saved === 'true') setBuilderDark(true)
   }, [])
@@ -214,14 +201,14 @@ function BuilderInner() {
     const data = await res.json()
     if (!res.ok) { setDeleteError(data.error); setDeleteLoading(false); return }
     // Clear cookies and redirect
-    localStorage.removeItem('ld_session')
-    localStorage.removeItem('ld_handle')
+    document.cookie = 'ld_session=; max-age=0; path=/'
+    document.cookie = 'ld_handle=; max-age=0; path=/'
     window.location.href = '/'
   }
 
   const signOut = () => {
-    localStorage.removeItem('ld_session')
-    localStorage.removeItem('ld_handle')
+    document.cookie = 'ld_session=; max-age=0; path=/'
+    document.cookie = 'ld_handle=; max-age=0; path=/'
     window.location.href = '/login'
   }
   const handleBgHexInput = (val: string) => { setBgHexInput(val); const hex = val.startsWith('#') ? val : '#' + val; if (isValidHex(hex)) { setCustomBg(hex); setTheme('light') } }

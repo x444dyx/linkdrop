@@ -93,6 +93,8 @@ export default function Home() {
     const data = await signupRes.json()
     if (!signupRes.ok) { setError(data.error); setLoading(false); return }
 
+    localStorage.setItem('ld_session', data.token)
+    localStorage.setItem('ld_handle', handle)
     window.location.href = `/builder?handle=${handle}`
   }
 

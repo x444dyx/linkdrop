@@ -35,8 +35,9 @@ function LoginInner() {
       setLoading(false)
       return
     }
-    // Small delay to ensure cookie is committed before navigation
-    await new Promise(resolve => setTimeout(resolve, 100))
+    // Store session in localStorage
+    localStorage.setItem('ld_session', data.token)
+    localStorage.setItem('ld_handle', inputHandle.toLowerCase())
     window.location.href = `/builder?handle=${inputHandle.toLowerCase()}`
   }
 
