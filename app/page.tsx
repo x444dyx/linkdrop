@@ -275,7 +275,7 @@ export default function LandingPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <img src="/logo.png" alt="" style={{ width: 14, height: 14, opacity: 0.5 }} />
           <span style={{ fontSize: 8, color: '#aaa', letterSpacing: '0.12em' }}>LINKDROP</span>
-          <span style={{ fontSize: 8, color: '#333', letterSpacing: '0.1em' }}>v1.4.0</span>
+          <span style={{ fontSize: 8, color: '#333', letterSpacing: '0.1em' }}>v1.4.1</span>
         </div>
         <div style={{ display: 'flex', gap: isMobile ? 12 : 20, flexWrap: 'wrap' as const }}>
           {[['EXPLORE', '/explore'], ['DOCS', '/docs'], ['SIGN IN', '/login'], ['CLAIM', '/claim']].map(([label, href]) => (

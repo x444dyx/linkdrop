@@ -294,7 +294,7 @@ function BuilderInner() {
           </div>
           <span style={{ color: uiBorderStrong }}>/</span>
           <span style={{ fontSize: 11, color: uiText }}>@{handle}</span>
-          <span style={{ fontSize: 8, color: uiDim, fontFamily: "'DM Mono', monospace", letterSpacing: '0.08em' }}>v1.4.0</span>
+          <span style={{ fontSize: 8, color: uiDim, fontFamily: "'DM Mono', monospace", letterSpacing: '0.08em' }}>v1.4.1</span>
           {viewCount > 0 && (
             <span style={{ fontSize: 9, color: uiMuted, background: uiSurface, border: `1px solid ${uiBorder}`, borderRadius: 3, padding: '2px 7px' }}>
               {viewCount.toLocaleString()} views
