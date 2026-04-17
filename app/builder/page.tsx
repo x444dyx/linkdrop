@@ -28,7 +28,7 @@ const AVATAR_COLORS = ['#111110','#534AB7','#0F6E56','#993C1D','#D4537E','#185FA
 const SOCIAL_QUICK = [
   { label: 'X', color: '#000', prefix: 'https://x.com/' },
   { label: 'Instagram', color: '#E1306C', prefix: 'https://instagram.com/' },
-  { label: 'GitHub', color: '#333', prefix: 'https://github.com/' },
+  { label: 'GitHub', color: '#666', prefix: 'https://github.com/' },
   { label: 'LinkedIn', color: '#0077B5', prefix: 'https://linkedin.com/in/' },
   { label: 'TikTok', color: '#010101', prefix: 'https://tiktok.com/@' },
   { label: 'YouTube', color: '#FF0000', prefix: 'https://youtube.com/@' },
@@ -155,10 +155,47 @@ function BuilderInner() {
   const removeLink = (id: string) => setLinks(prev => prev.filter(l => l.id !== id))
   const updateLinkAvatar = (id: string, url: string) => setLinks(prev => prev.map(l => l.id === id ? { ...l, avatar_url: url || undefined } : l))
   const updateLinkSize = (id: string, size: 'small' | 'medium' | 'large') => setLinks(prev => prev.map(l => l.id === id ? { ...l, size } : l))
-  const togglePin = (id: string) => setLinks(prev => {
-    const updated = prev.map(l => l.id === id ? { ...l, pinned: !l.pinned } : l)
-    return [...updated.filter(l => l.pinned), ...updated.filter(l => !l.pinned)]
-  })
+  const togglePin = (id: string) => {
+    const currentPinned = links.find(l => l.pinned)
+    const target = links.find(l => l.id === id)
+    if (!target) return
+
+    // Unpinning
+    if (target.pinned) {
+      setLinks(prev => prev.map(l => l.id === id ? { ...l, pinned: false } : l))
+      return
+    }
+
+    // Already have a pinned link — warn before replacing
+    if (currentPinned && currentPinned.id !== id) {
+      const confirmed = window.confirm(
+        `"${currentPinned.label}" is currently pinned.\n\nPinning "${target.label}" will unpin it and move it to where "${target.label}" currently sits.\n\nContinue?`
+      )
+      if (!confirmed) return
+      setLinks(prev => {
+        const arr = [...prev]
+        const oldPinIdx = arr.findIndex(l => l.id === currentPinned.id) // position 0 (top)
+        const newPinIdx = arr.findIndex(l => l.id === id) // e.g. position 6
+        // Place unpinned old link at the new pin's position, pin new link at top
+        const updatedOld = { ...arr[oldPinIdx], pinned: false }
+        const updatedNew = { ...arr[newPinIdx], pinned: true }
+        // Remove both from array
+        const rest = arr.filter(l => l.id !== currentPinned.id && l.id !== id)
+        // Re-insert old unpinned where new was (accounting for removal of old from top)
+        const insertAt = newPinIdx - 1 // -1 because old pin was removed from index 0
+        rest.splice(insertAt, 0, updatedOld)
+        // New pin goes to top
+        return [updatedNew, ...rest]
+      })
+      return
+    }
+
+    // No existing pin — just pin it
+    setLinks(prev => {
+      const updated = prev.map(l => l.id === id ? { ...l, pinned: true } : l)
+      return [...updated.filter(l => l.pinned), ...updated.filter(l => !l.pinned)]
+    })
+  }
   const startEdit = (link: any) => { setEditingLinkId(link.id); setEditLabel(link.label); setEditUrl(link.url) }
   const saveEdit = (id: string) => {
     if (!editLabel.trim()) return
@@ -233,8 +270,8 @@ function BuilderInner() {
   const uiBorder = D ? '#1e1e1e' : '#e0e0e0'
   const uiBorderStrong = D ? '#2a2a2a' : '#cccccc'
   const uiText = D ? '#f0f0f0' : '#111111'
-  const uiMuted = D ? '#555' : '#aaaaaa'
-  const uiDim = D ? '#333' : '#cccccc'
+  const uiMuted = D ? '#888' : '#777'
+  const uiDim = D ? '#666' : '#aaaaaa'
   const uiSurface = D ? '#1a1a1a' : '#f0f0f0'
   const uiInputBg = D ? '#1a1a1a' : '#ffffff'
   const uiTabActive = D ? '#1e1e1e' : '#e8e8e8'
@@ -264,7 +301,7 @@ function BuilderInner() {
           <button onClick={toggleBuilderDark} style={{ padding: '6px 10px', background: 'transparent', border: '1px solid #2a2a2a', borderRadius: 3, fontSize: 12, cursor: 'pointer', color: '#888' }}>
             {builderDark ? '☀️' : '🌙'}
           </button>
-          <button onClick={signOut} style={{ padding: '6px 12px', background: 'transparent', border: '1px solid #2a2a2a', borderRadius: 3, fontSize: 9, color: '#555', cursor: 'pointer', fontFamily: "'DM Mono', monospace", letterSpacing: '0.08em' }}>
+          <button onClick={signOut} style={{ padding: '6px 12px', background: 'transparent', border: '1px solid #2a2a2a', borderRadius: 3, fontSize: 9, color: '#aaa', cursor: 'pointer', fontFamily: "'DM Mono', monospace", letterSpacing: '0.08em' }}>
             SIGN OUT
           </button>
           <button onClick={copyUrl} style={{ padding: '6px 12px', background: 'transparent', border: '1px solid #2a2a2a', borderRadius: 3, fontSize: 10, color: '#888', cursor: 'pointer', letterSpacing: '0.08em' }}>
@@ -287,7 +324,7 @@ function BuilderInner() {
               <button key={tab} onClick={() => setActiveTab(tab)} style={{
                 flex: 1, padding: '8px 4px', background: activeTab === tab ? uiTabActive : 'transparent',
                 border: 'none', borderBottom: activeTab === tab ? `1px solid ${uiText}` : `1px solid transparent`,
-                color: activeTab === tab ? uiText : uiMuted, fontSize: 10, cursor: 'pointer',
+                color: activeTab === tab ? uiText : '#888', fontSize: 10, cursor: 'pointer',
                 fontFamily: "'DM Mono', monospace", letterSpacing: '0.08em', textTransform: 'uppercase', transition: 'all 0.15s',
               }}>{tab}</button>
             ))}
@@ -317,15 +354,6 @@ function BuilderInner() {
                   </Section>
                 )}
 
-                <Section dark={D} label="Layout">
-                  <div style={{ display: 'flex', gap: 4 }}>
-                    {LAYOUT_OPTIONS.map(l => (
-                      <button key={l.value} onClick={() => setLayout(l.value)} style={{ flex: 1, padding: '6px 4px', background: layout === l.value ? '#f0f0f0' : 'transparent', color: layout === l.value ? '#111' : '#555', border: '1px solid ' + (layout === l.value ? '#f0f0f0' : '#2a2a2a'), borderRadius: 3, fontSize: 9, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Mono', monospace", letterSpacing: '0.06em', textTransform: 'uppercase', transition: 'all 0.15s' }}>
-                        {l.label}
-                      </button>
-                    ))}
-                  </div>
-                </Section>
               </>
             )}
 
@@ -356,8 +384,8 @@ function BuilderInner() {
 
                         {/* Link header row */}
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 10px' }}>
-                          <span style={{ fontSize: 10, color: '#333', cursor: 'grab' }}>⠿</span>
-                          {link.pinned && <span style={{ fontSize: 8, color: uiMuted, background: uiTabActive, border: `1px solid ${uiBorder}`, borderRadius: 2, padding: '1px 4px' }}>PIN</span>}
+                          <span style={{ fontSize: 10, color: '#666', cursor: 'grab' }}>⠿</span>
+                          {link.pinned && <span style={{ fontSize: 8, color: '#f0f0f0', background: '#333', border: '1px solid #444', borderRadius: 2, padding: '1px 5px', letterSpacing: '0.04em' }}>PINNED</span>}
                           <span style={{ flex: 1, fontSize: 11, color: uiText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{link.label}</span>
                           {clickCounts[link.id] > 0 && <span style={{ fontSize: 8, color: uiMuted, background: uiSurface, border: `1px solid ${uiBorder}`, borderRadius: 2, padding: '1px 5px', flexShrink: 0 }}>{clickCounts[link.id]} clicks</span>}
                           <button onClick={() => startEdit(link)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: uiMuted, fontSize: 10, padding: '0 2px' }}>✎</button>
@@ -372,7 +400,7 @@ function BuilderInner() {
                             <input value={editUrl} onChange={e => setEditUrl(e.target.value)} placeholder="URL" onKeyDown={e => e.key === 'Enter' && saveEdit(link.id)} style={inp} />
                             <div style={{ display: 'flex', gap: 4 }}>
                               <button onClick={() => saveEdit(link.id)} style={{ flex: 1, padding: '5px', background: '#f0f0f0', color: '#111', border: 'none', borderRadius: 3, fontSize: 9, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Mono', monospace", letterSpacing: '0.06em' }}>SAVE</button>
-                              <button onClick={() => setEditingLinkId(null)} style={{ flex: 1, padding: '5px', background: 'transparent', color: '#555', border: '1px solid #2a2a2a', borderRadius: 3, fontSize: 9, cursor: 'pointer', fontFamily: "'DM Mono', monospace", letterSpacing: '0.06em' }}>CANCEL</button>
+                              <button onClick={() => setEditingLinkId(null)} style={{ flex: 1, padding: '5px', background: 'transparent', color: '#aaa', border: '1px solid #2a2a2a', borderRadius: 3, fontSize: 9, cursor: 'pointer', fontFamily: "'DM Mono', monospace", letterSpacing: '0.06em' }}>CANCEL</button>
                             </div>
                           </div>
                         )}
@@ -398,7 +426,7 @@ function BuilderInner() {
                       <input placeholder="URL (https://...)" value={newUrl} onChange={e => setNewUrl(e.target.value)} onKeyDown={e => e.key === 'Enter' && addLink()} style={inp} />
                       <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
                         <button onClick={addLink} style={{ flex: 1, padding: '7px', background: '#f0f0f0', color: '#111', border: 'none', borderRadius: 3, fontSize: 9, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Mono', monospace", letterSpacing: '0.06em' }}>ADD</button>
-                        <button onClick={() => setAddingLink(false)} style={{ flex: 1, padding: '7px', background: 'transparent', color: '#555', border: '1px solid #2a2a2a', borderRadius: 3, fontSize: 9, cursor: 'pointer', fontFamily: "'DM Mono', monospace", letterSpacing: '0.06em' }}>CANCEL</button>
+                        <button onClick={() => setAddingLink(false)} style={{ flex: 1, padding: '7px', background: 'transparent', color: '#aaa', border: '1px solid #2a2a2a', borderRadius: 3, fontSize: 9, cursor: 'pointer', fontFamily: "'DM Mono', monospace", letterSpacing: '0.06em' }}>CANCEL</button>
                       </div>
                     </div>
                   ) : (
@@ -408,7 +436,7 @@ function BuilderInner() {
                   )}
 
                   <div style={{ marginTop: 8, textAlign: 'right' }}>
-                    <button onClick={refreshClicks} style={{ fontSize: 9, color: uiMuted, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Mono', monospace", letterSpacing: '0.06em' }}>↻ REFRESH CLICKS</button>
+                    <button onClick={refreshClicks} style={{ fontSize: 9, color: D ? '#aaa' : '#666', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Mono', monospace", letterSpacing: '0.06em' }}>↻ REFRESH CLICKS</button>
                   </div>
                 </Section>
               </>
@@ -417,6 +445,17 @@ function BuilderInner() {
             {/* THEME TAB */}
             {activeTab === 'theme' && (
               <>
+                <Section dark={D} label="Layout">
+                  <p style={{ fontSize: 10, color: D ? '#aaa' : '#666', marginBottom: 10, lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>Choose how your links are displayed. Rows stacks links vertically. Bubbles wraps them as pills. Grid shows a two-column card view. Icons displays circular avatars.</p>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    {LAYOUT_OPTIONS.map(l => (
+                      <button key={l.value} onClick={() => setLayout(l.value)} style={{ flex: 1, padding: '6px 4px', background: layout === l.value ? '#f0f0f0' : 'transparent', color: layout === l.value ? '#111' : '#555', border: '1px solid ' + (layout === l.value ? '#f0f0f0' : '#2a2a2a'), borderRadius: 3, fontSize: 9, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Mono', monospace", letterSpacing: '0.06em', textTransform: 'uppercase', transition: 'all 0.15s' }}>
+                        {l.label}
+                      </button>
+                    ))}
+                  </div>
+                </Section>
+
                 <Section dark={D} label="Presets">
                   <div style={{ display: 'flex', gap: 8 }}>
                     {THEME_OPTIONS.map(t => (
@@ -445,6 +484,12 @@ function BuilderInner() {
                     ))}
                   </div>
                 </Section>
+                <Section dark={D} label="Explore">
+                  <p style={{ fontSize: 10, color: D ? '#aaa' : '#666', marginBottom: 10, lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>Browse other Linkdrop profiles for theme inspiration. You can copy any theme directly to your profile with one click — password verified.</p>
+                  <a href="/explore" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', background: 'transparent', color: uiMuted, border: `1px solid ${uiBorderStrong}`, borderRadius: 3, fontSize: 9, textDecoration: 'none', fontFamily: "'DM Mono', monospace", letterSpacing: '0.08em' }}>
+                    VIEW EXPLORE PAGE →
+                  </a>
+                </Section>
               </>
             )}
 
@@ -453,19 +498,13 @@ function BuilderInner() {
               <>
                 <Section dark={D} label="Your link">
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 10px', background: uiSurface, border: `1px solid ${uiBorder}`, borderRadius: 3 }}>
-                    <span style={{ fontSize: 10, color: uiMuted }}>linkdrop.ayteelabs.com/<strong style={{ color: uiText }}>{handle}</strong></span>
+                    <span style={{ fontSize: 10, color: D ? '#aaa' : '#666' }}>linkdrop.ayteelabs.com/<strong style={{ color: uiText }}>{handle}</strong></span>
                     <button onClick={copyUrl} style={{ fontSize: 9, color: uiMuted, background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.06em' }}>COPY</button>
                   </div>
                 </Section>
 
                 <Section dark={D} label="QR Code">
                   <QRCode handle={handle} savedQrUrl={qrUrl} onSaved={url => setQrUrl(url)} />
-                </Section>
-
-                <Section dark={D} label="Explore">
-                  <a href="/explore" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', background: 'transparent', color: uiMuted, border: `1px solid ${uiBorderStrong}`, borderRadius: 3, fontSize: 9, textDecoration: 'none', fontFamily: "'DM Mono', monospace", letterSpacing: '0.08em' }}>
-                    VIEW EXPLORE PAGE →
-                  </a>
                 </Section>
 
                 <Section dark={D} label="Danger zone">
