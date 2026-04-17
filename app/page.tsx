@@ -174,7 +174,7 @@ export default function LandingPage() {
             <div style={{ fontSize: 10, color: '#888', letterSpacing: '0.2em', marginBottom: 14 }}>03 — FEATURES</div>
             <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 300, color: '#f0f0f0', marginBottom: 56, fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.03em', lineHeight: 1.1 }}>everything you need.<br />nothing you don&apos;t.</h2>
           </FadeIn>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 1, background: '#141414' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: '#141414' }}>
             {FEATURES.map((f, i) => (
               <FadeIn key={f.title} delay={i * 0.06}>
                 <div style={{ padding: '28px', background: '#0c0c0c', transition: 'background 0.2s', cursor: 'default' }}
