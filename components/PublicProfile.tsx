@@ -169,7 +169,6 @@ export default function PublicProfile({ profile, avatarUrl, customBg, customAcce
 
             return (
               <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" onClick={e => { e.preventDefault(); trackClick(link.id, link.url) }}
-                onClick={e => { e.preventDefault(); trackClick(link.id, link.url) }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 12,
                   padding: '11px 28px',
