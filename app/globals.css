@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+
+  --bg: #f5f4f0;
+  --bg-card: #ffffff;
+  --bg-surface: #edecea;
+  --text-primary: #111110;
+  --text-secondary: #6b6a67;
+  --text-muted: #a8a7a4;
+  --border: rgba(0,0,0,0.1);
+  --border-strong: rgba(0,0,0,0.2);
+  --accent: #111110;
+
+  --theme-purple: #534AB7;
+  --theme-teal: #0F6E56;
+  --theme-coral: #993C1D;
+}
+
+[data-theme="dark"] {
+  --bg: #111110;
+  --bg-card: #1c1c1a;
+  --bg-surface: #252523;
+  --text-primary: #f0efeb;
+  --text-secondary: #888780;
+  --text-muted: #555450;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --accent: #f0efeb;
+}
+
+[data-theme="purple"] {
+  --bg: #EEEDFE;
+  --bg-card: #ffffff;
+  --bg-surface: #e0dffb;
+  --text-primary: #26215C;
+  --text-secondary: #534AB7;
+  --text-muted: #7F77DD;
+  --border: rgba(83,74,183,0.15);
+  --border-strong: rgba(83,74,183,0.3);
+  --accent: #534AB7;
+}
+
+[data-theme="teal"] {
+  --bg: #E1F5EE;
+  --bg-card: #ffffff;
+  --bg-surface: #c8eede;
+  --text-primary: #04342C;
+  --text-secondary: #0F6E56;
+  --text-muted: #1D9E75;
+  --border: rgba(15,110,86,0.15);
+  --border-strong: rgba(15,110,86,0.3);
+  --accent: #0F6E56;
+}
+
+[data-theme="coral"] {
+  --bg: #FAECE7;
+  --bg-card: #ffffff;
+  --bg-surface: #f5d5c8;
+  --text-primary: #4A1B0C;
+  --text-secondary: #993C1D;
+  --text-muted: #D85A30;
+  --border: rgba(153,60,29,0.15);
+  --border-strong: rgba(153,60,29,0.3);
+  --accent: #993C1D;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fadeUp { animation: fadeUp 0.4s ease forwards; }
+.animate-fadeIn { animation: fadeIn 0.3s ease forwards; }
+
+.stagger-1 { animation-delay: 0.05s; opacity: 0; }
+.stagger-2 { animation-delay: 0.1s; opacity: 0; }
+.stagger-3 { animation-delay: 0.15s; opacity: 0; }
+.stagger-4 { animation-delay: 0.2s; opacity: 0; }
+.stagger-5 { animation-delay: 0.25s; opacity: 0; }
+.stagger-6 { animation-delay: 0.3s; opacity: 0; }
