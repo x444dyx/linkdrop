@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: { params: { handle: string } 
   const handle = data.handle
   const bio = data.bio || `@${handle}'s links on Linkdrop`
   const url = `https://linkdrop.ayteelabs.com/${handle}`
-  const image = data.avatar_url || `https://linkdrop.ayteelabs.com/logo.png`
+  const image = `https://linkdrop.ayteelabs.com/api/og?handle=${handle}`
   const linkCount = data.links?.length || 0
   const description = bio + (linkCount > 0 ? ` · ${linkCount} link${linkCount === 1 ? '' : 's'}` : '')
 
@@ -77,11 +77,11 @@ export async function generateMetadata({ params }: { params: { handle: string } 
       type: 'profile',
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       site: '@ayteelabs',
       title: `@${handle} on Linkdrop`,
       description,
-      images: [image],
+      images: [`https://linkdrop.ayteelabs.com/api/og?handle=${handle}`],
     },
   }
 }
