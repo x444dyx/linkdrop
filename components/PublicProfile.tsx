@@ -207,7 +207,7 @@ export default function PublicProfile({ profile, avatarUrl, customBg, customAcce
         <div style={{ padding: '12px 20px', borderBottom: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
           {/* Left — claim button */}
-          <a href="/claim" style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none', padding: '4px 10px', border: `1px solid ${borderColor}`, borderRadius: 99, transition: 'all 0.15s' }}
+          <a href="/claim"
             onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = textPrimary; el.style.opacity = '1' }}
             onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = borderColor; el.style.opacity = '0.7' }}
             style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none', padding: '4px 10px', border: `1px solid ${borderColor}`, borderRadius: 99, transition: 'all 0.15s', opacity: 0.7 }}
