@@ -38,8 +38,50 @@ export default async function HandlePage({ params }: { params: { handle: string 
 }
 
 export async function generateMetadata({ params }: { params: { handle: string } }) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  const { data } = await supabase
+    .from('profiles')
+    .select('handle, bio, avatar_url, avatar_color, links')
+    .eq('handle', params.handle)
+    .single()
+
+  if (!data) return { title: 'linkdrop' }
+
+  const handle = data.handle
+  const bio = data.bio || `@${handle}'s links on Linkdrop`
+  const url = `https://linkdrop.ayteelabs.com/${handle}`
+  const image = data.avatar_url || `https://linkdrop.ayteelabs.com/logo.png`
+  const linkCount = data.links?.length || 0
+  const description = bio + (linkCount > 0 ? ` · ${linkCount} link${linkCount === 1 ? '' : 's'}` : '')
+
   return {
-    title: `@${params.handle} — linkdrop`,
-    description: `Check out @${params.handle}'s links on linkdrop`,
+    title: `@${handle} — Linkdrop`,
+    description,
+    openGraph: {
+      title: `@${handle} on Linkdrop`,
+      description,
+      url,
+      siteName: 'Linkdrop',
+      images: [
+        {
+          url: image,
+          width: 400,
+          height: 400,
+          alt: `@${handle}'s profile photo`,
+        }
+      ],
+      type: 'profile',
+    },
+    twitter: {
+      card: 'summary',
+      site: '@ayteelabs',
+      title: `@${handle} on Linkdrop`,
+      description,
+      images: [image],
+    },
   }
 }
