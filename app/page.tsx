@@ -42,6 +42,7 @@ const FEATURES = [
   { icon: '🎭', title: 'Copy any theme', desc: 'Browse the explore page and spot a theme you love. One click to copy it to your own profile — just verify with your password.' },
   { icon: '📐', title: 'Link sizes', desc: 'Each link can be small, medium, or large — independently. Large links show a full banner image, just like Linktree.' },
   { icon: '📱', title: 'Branded QR code', desc: 'Generate a Linkdrop-branded QR code for your profile. Saved automatically. Download as PNG anytime.' },
+  { icon: '🔒', title: 'Secure by default', desc: 'Your builder is password protected. Wrong password 5 times and the account locks. Reset via email anytime.' },
 ]
 
 const STEPS = [
